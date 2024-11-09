@@ -1,39 +1,25 @@
+'use client'
+
+import { useState } from 'react'
 import Image from 'next/image'
 import { TokenDetails } from '@/components/token/token-details'
 import { NFTPortfolio } from '@/components/nft/nft-portfolio'
 import { HoldersList } from '@/components/token/holders-list'
-import type { TokenInfo } from '@/types'
+import { useNFTs } from '@/hooks/useNFTs'
+import type { NFT } from '@/types/nft'
+import { Card, CardContent } from "@/components/ui/card"
 
-// This is now a Server Component
-async function getTokenData(): Promise<TokenInfo> {
-  // In production, this would be an actual API call
-  return {
-    walletAddress: 'THANKYOUJE4LVRECDJOBPYZXFEVOXF3VQ6QEAXB3BFZWXDFJWE27URFZ3Q',
-    tokenId: 'ABCD1234',
-    balance: 10.5,
-    nfts: [
-      { id: '1', name: 'Landscape NFT', symbol: '🌄', bgColor: '#FFE4E1', width: 800, height: 400 },
-      { id: '2', name: 'Portrait NFT', symbol: '👤', bgColor: '#E6E6FA', width: 400, height: 800 },
-      { id: '3', name: 'Square NFT', symbol: '⬛', bgColor: '#F0FFF0', width: 600, height: 600 },
-      { id: '4', name: 'Wide NFT', symbol: '🌅', bgColor: '#F0F8FF', width: 1200, height: 400 },
-    ],
-    holders: [
-      { address: '0x123...', amount: 5 },
-      { address: '0x456...', amount: 3 },
-      { address: '0x789...', amount: 2.5 },
-    ],
-  }
-}
+const WALLET_ADDRESS = 'THANKYOUJE4LVRECDJOBPYZXFEVOXF3VQ6QEAXB3BFZWXDFJWE27URFZ3Q'
 
-export default async function Home() {
-  const tokenData = await getTokenData()
+export default function Home() {
+  const { nfts, loading, error } = useNFTs(WALLET_ADDRESS)
 
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="container max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
-            <div className="bg-[#FF8C29]/10 p-8 flex items-center justify-center">
+            <div className="bg-primary/10 p-8 flex items-center justify-center">
               <Image
                 src="/images/chris-tyt.png"
                 alt="Chris Thank You Token"
@@ -60,9 +46,30 @@ export default async function Home() {
           </div>
         </div>
 
-        <TokenDetails tokenInfo={tokenData} />
-        <NFTPortfolio nfts={tokenData.nfts} />
-        <HoldersList holders={tokenData.holders} />
+        <TokenDetails tokenInfo={{ walletAddress: WALLET_ADDRESS, tokenId: 'ABCD1234', balance: 10.5 }} />
+        
+        {loading ? (
+          <Card className="mt-6">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+              </div>
+            </CardContent>
+          </Card>
+        ) : error ? (
+          <Card className="mt-6">
+            <CardContent className="p-8 text-center text-red-500">
+              {error}
+            </CardContent>
+          </Card>
+        ) : (
+          <NFTPortfolio nfts={nfts} />
+        )}
+
+        <HoldersList holders={[
+          { address: WALLET_ADDRESS, amount: 5 },
+          // Add more holders here
+        ]} />
       </div>
     </main>
   )
