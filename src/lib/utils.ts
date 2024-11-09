@@ -23,8 +23,8 @@ export async function fetchTokenBalance(address: string): Promise<number> {
   try {
     // TODO: Implement actual chain query
     return 0
-  } catch (error) {
-    console.error('Error fetching token balance:', error)
+  } catch (err) {
+    console.error('Error fetching token balance:', err)
     return 0
   }
 }
@@ -33,8 +33,8 @@ export async function fetchARC200Balances(address: string): Promise<ChainAsset[]
   try {
     // TODO: Implement ARC200 token query
     return []
-  } catch (error) {
-    console.error('Error fetching ARC200 balances:', error)
+  } catch (err) {
+    console.error('Error fetching ARC200 balances:', err)
     return []
   }
 }

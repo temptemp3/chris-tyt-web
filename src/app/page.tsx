@@ -6,7 +6,7 @@ import { TokenDetails } from '@/components/token/token-details'
 import { NFTPortfolio } from '@/components/nft/nft-portfolio'
 import { HoldersList } from '@/components/token/holders-list'
 import { useNFTs } from '@/hooks/useNFTs'
-import type { NFT } from '@/types/nft'
+import type { NFT } from '@/types'
 import { Card, CardContent } from "@/components/ui/card"
 
 const WALLET_ADDRESS = 'THANKYOUJE4LVRECDJOBPYZXFEVOXF3VQ6QEAXB3BFZWXDFJWE27URFZ3Q'
@@ -46,7 +46,11 @@ export default function Home() {
           </div>
         </div>
 
-        <TokenDetails tokenInfo={{ walletAddress: WALLET_ADDRESS, tokenId: 'ABCD1234', balance: 10.5 }} />
+        <TokenDetails tokenInfo={{ 
+          walletAddress: WALLET_ADDRESS, 
+          tokenId: 'ABCD1234', 
+          balance: 10.5 
+        }} />
         
         {loading ? (
           <Card className="mt-6">
