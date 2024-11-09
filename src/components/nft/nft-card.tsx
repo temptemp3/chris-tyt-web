@@ -2,8 +2,7 @@
 
 import type { NFT } from "@/types"
 import { Card, CardContent } from "../ui/card"
-import { useId } from "react" // New React 18 hook for unique IDs
-// import { motion } from "framer-motion" // If we add framer-motion
+import { useId } from "react"
 
 type NFTCardProps = {
   nft: NFT
@@ -15,7 +14,7 @@ export function NFTCard({ nft, onClick }: NFTCardProps) {
 
   return (
     <Card 
-      className="cursor-pointer hover:shadow-lg transition-all group"
+      className="cursor-pointer group transition-all duration-300 hover:shadow-lg"
       onClick={() => onClick(nft)}
       role="button"
       tabIndex={0}
@@ -29,7 +28,7 @@ export function NFTCard({ nft, onClick }: NFTCardProps) {
         <div className="relative w-full pt-[100%] overflow-hidden rounded-lg">
           <div className="absolute inset-0">
             <div 
-              className="w-full h-full flex items-center justify-center transition-transform group-hover:scale-105"
+              className="w-full h-full flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
               style={{
                 backgroundColor: nft.bgColor,
                 fontSize: '2rem',
@@ -41,7 +40,7 @@ export function NFTCard({ nft, onClick }: NFTCardProps) {
             </div>
           </div>
         </div>
-        <p className="mt-2 font-medium text-center group-hover:text-primary transition-colors">
+        <p className="mt-2 font-medium text-center group-hover:text-primary transition-colors duration-300">
           {nft.name}
         </p>
       </CardContent>

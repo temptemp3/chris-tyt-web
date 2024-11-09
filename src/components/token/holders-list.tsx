@@ -2,26 +2,33 @@
 
 import { useMemo } from 'react'
 import type { Holder } from "@/types"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card"
+import { Button } from "../ui/button"
 import { formatAddress, formatNumber } from "@/lib/utils"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Copy, CheckCircle2 } from "lucide-react"
+import { useState } from 'react'
 
 type HoldersListProps = {
   holders: Holder[]
 }
 
 export function HoldersList({ holders }: HoldersListProps) {
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
+  
   const totalHoldings = useMemo(() => 
     holders.reduce((sum, holder) => sum + holder.amount, 0),
     [holders]
   )
+
+  const copyToClipboard = async (address: string) => {
+    try {
+      await navigator.clipboard.writeText(address)
+      setCopiedAddress(address)
+      setTimeout(() => setCopiedAddress(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }
 
   return (
     <Card className="mt-6 transition-all hover:shadow-md">
@@ -35,30 +42,47 @@ export function HoldersList({ holders }: HoldersListProps) {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto relative rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50%]">Address</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="text-right w-[100px]">Share %</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="text-left p-2 border-b">Address</th>
+                <th className="text-right p-2 border-b">Amount</th>
+                <th className="text-right p-2 border-b w-[100px]">Share %</th>
+              </tr>
+            </thead>
+            <tbody>
               {holders.map((holder) => (
-                <TableRow key={holder.address} className="group">
-                  <TableCell className="font-mono group-hover:bg-muted/50">
-                    {formatAddress(holder.address)}
-                  </TableCell>
-                  <TableCell className="text-right group-hover:bg-muted/50">
+                <tr key={holder.address} className="group hover:bg-muted/50 transition-colors">
+                  <td className="p-2 border-b">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono">
+                        {formatAddress(holder.address)}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 hover:bg-background hover:text-primary"
+                        onClick={() => copyToClipboard(holder.address)}
+                        title="Copy address"
+                      >
+                        {copiedAddress === holder.address ? (
+                          <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </td>
+                  <td className="p-2 border-b text-right">
                     {formatNumber(holder.amount)}
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground group-hover:bg-muted/50">
+                  </td>
+                  <td className="p-2 border-b text-right text-muted-foreground">
                     {((holder.amount / totalHoldings) * 100).toFixed(1)}%
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </CardContent>
     </Card>
