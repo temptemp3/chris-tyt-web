@@ -8,11 +8,10 @@ import { HoldersList } from '@/components/token/holders-list'
 import { useNFTs } from '@/hooks/useNFTs'
 import type { NFT } from '@/types'
 import { Card, CardContent } from "@/components/ui/card"
-
-const WALLET_ADDRESS = 'THANKYOUJE4LVRECDJOBPYZXFEVOXF3VQ6QEAXB3BFZWXDFJWE27URFZ3Q'
+import { CONFIG } from '@/config'
 
 export default function Home() {
-  const { nfts, loading, error } = useNFTs(WALLET_ADDRESS)
+  const { nfts, loading, error } = useNFTs(CONFIG.WALLET_ADDRESS)
 
   return (
     <main className="min-h-screen bg-background py-12">
@@ -47,9 +46,8 @@ export default function Home() {
         </div>
 
         <TokenDetails tokenInfo={{ 
-          walletAddress: WALLET_ADDRESS, 
-          tokenId: 'ABCD1234', 
-          balance: 10.5 
+          walletAddress: CONFIG.WALLET_ADDRESS, 
+          tokenId: CONFIG.TOKEN_ID.toString()
         }} />
         
         {loading ? (
@@ -70,10 +68,7 @@ export default function Home() {
           <NFTPortfolio nfts={nfts} />
         )}
 
-        <HoldersList holders={[
-          { address: WALLET_ADDRESS, amount: 5 },
-          // Add more holders here
-        ]} />
+        <HoldersList />
       </div>
     </main>
   )

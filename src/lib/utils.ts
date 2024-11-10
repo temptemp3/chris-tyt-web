@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import type { ChainAsset } from "@/types"
+import algosdk from 'algosdk'
+import { CONFIG } from '@/config'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -19,26 +20,19 @@ export function formatNumber(num: number): string {
   }).format(num)
 }
 
-export async function fetchTokenBalance(address: string): Promise<number> {
+const algodClient = new algosdk.Algodv2(
+  '',
+  CONFIG.APIS.VOI_NODE,
+  ''
+)
+
+export async function getVoiBalance(address: string): Promise<number> {
   try {
-    // TODO: Implement actual chain query
-    return 0
+    const accountInfo = await algodClient.accountInformation(address).do()
+    // Convert bigint to number and then divide by 1_000_000
+    return Number(accountInfo.amount) / 1_000_000
   } catch (err) {
-    console.error('Error fetching token balance:', err)
+    console.error('Error fetching VOI balance:', err)
     return 0
   }
-}
-
-export async function fetchARC200Balances(address: string): Promise<ChainAsset[]> {
-  try {
-    // TODO: Implement ARC200 token query
-    return []
-  } catch (err) {
-    console.error('Error fetching ARC200 balances:', err)
-    return []
-  }
-}
-
-export async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms))
 }

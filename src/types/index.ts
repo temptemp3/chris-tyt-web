@@ -1,19 +1,36 @@
 export type TokenDetails = {
     walletAddress: string;
     tokenId: string;
+}
+
+export type TokenBalance = {
+    accountId: string;
+    contractId: number;
+    balance: string;
+}
+
+export type TokenBalanceResponse = {
+    "current-round": number;
+    balances: TokenBalance[];
+    "next-token": null;
+}
+
+export type TokenHolderDisplay = {
+    address: string;
     balance: number;
-  }
-  
-  export type NFTMetadata = {
+    percentage: number;
+}
+
+export type NFTMetadata = {
     name: string;
     description: string;
     image?: string;
     image_integrity?: string;
     image_mimetype?: string;
     properties?: Record<string, string>;
-  }
-  
-  export type NFT = {
+}
+
+export type NFT = {
     contractId: number;
     tokenId: number;
     owner: string;
@@ -22,26 +39,26 @@ export type TokenDetails = {
     metadata: string;
     "mint-round": number;
     isBurned: boolean;
-  }
-  
-  export type NFTResponse = {
+}
+
+export type NFTResponse = {
     currentRound: number;
     tokens: NFT[];
     "next-token": number;
-  }
-  
-  export type Holder = {
+}
+
+export type Holder = {
     address: string;
     amount: number;
-  }
-  
-  export type ChainAsset = {
+}
+
+export type ChainAsset = {
     name: string;
     amount: number;
     symbol: string;
-  }
-  
-  export type AccountBalance = {
+}
+
+export type AccountBalance = {
     voi: number;
     arc200Tokens: ChainAsset[];
-  }
+}

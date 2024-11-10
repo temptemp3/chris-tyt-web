@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { CONFIG } from '@/config';
 import type { NFT, NFTResponse } from '@/types/nft';
 
 export const useNFTs = (walletAddress: string) => {
@@ -10,7 +11,7 @@ export const useNFTs = (walletAddress: string) => {
     const fetchNFTs = async () => {
       try {
         const response = await fetch(
-          `https://mainnet-idx.nautilus.sh/nft-indexer/v1/tokens?owner=${walletAddress}&include=all`
+           `${CONFIG.APIS.NAUTILUS_INDEXER}/tokens?owner=${walletAddress}&include=all`
         );
         
         if (!response.ok) {
