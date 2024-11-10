@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { CONFIG } from '@/config';
-import type { TokenBalanceResponse, TokenHolderDisplay } from '@/types';
+import type { TokenHolderDisplay, TokenBalanceResponse } from '@/types';
 
-function useTokenHolders() {
+function useTokenData() {
   const [holders, setHolders] = useState<TokenHolderDisplay[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,4 +51,4 @@ function useTokenHolders() {
   return { holders, loading, error };
 }
 
-export default useTokenHolders;
+export default useTokenData;

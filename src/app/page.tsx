@@ -5,13 +5,19 @@ import Image from 'next/image'
 import { TokenDetails } from '@/components/token/token-details'
 import { NFTPortfolio } from '@/components/nft/nft-portfolio'
 import { HoldersList } from '@/components/token/holders-list'
+import { RollDice } from '@/components/token/roll-dice'
 import { useNFTs } from '@/hooks/useNFTs'
+import useTokenData from '@/hooks/useTokenHolders'
 import type { NFT } from '@/types'
 import { Card, CardContent } from "@/components/ui/card"
 import { CONFIG } from '@/config'
 
 export default function Home() {
-  const { nfts, loading, error } = useNFTs(CONFIG.WALLET_ADDRESS)
+  const { nfts, loading: nftsLoading, error: nftsError } = useNFTs(CONFIG.WALLET_ADDRESS)
+  const { holders, loading: holdersLoading, error: holdersError } = useTokenData()
+
+  const loading = nftsLoading || holdersLoading
+  const error = nftsError || holdersError
 
   return (
     <main className="min-h-screen bg-background py-12">
@@ -50,7 +56,7 @@ export default function Home() {
           tokenId: CONFIG.TOKEN_ID.toString()
         }} />
         
-        {loading ? (
+        {nftsLoading ? (
           <Card className="mt-6">
             <CardContent className="p-8">
               <div className="flex items-center justify-center">
@@ -58,17 +64,21 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
-        ) : error ? (
+        ) : nftsError ? (
           <Card className="mt-6">
             <CardContent className="p-8 text-center text-red-500">
-              {error}
+              {nftsError}
             </CardContent>
           </Card>
         ) : (
           <NFTPortfolio nfts={nfts} />
         )}
 
-        <HoldersList />
+        <HoldersList holders={holders} loading={holdersLoading} error={holdersError} />
+
+        {!loading && !error && nfts.length > 0 && holders.length > 0 && (
+          <RollDice holders={holders} nfts={nfts} />
+        )}
       </div>
     </main>
   )
