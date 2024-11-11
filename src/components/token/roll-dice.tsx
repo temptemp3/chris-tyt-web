@@ -3,11 +3,12 @@
 import { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Dice6, Trophy, Gift } from "lucide-react"
+import { Dice6, Trophy } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion'
 import type { NFT, TokenHolderDisplay } from "@/types"
 import { formatAddress } from "@/lib/utils"
 import * as Tooltip from '@radix-ui/react-tooltip'
+import { useCachedImage } from "@/lib/cache-utils"
 
 interface RollDiceProps {
   holders: TokenHolderDisplay[]
@@ -22,6 +23,9 @@ interface Winner {
 export function RollDice({ holders, nfts }: RollDiceProps) {
   const [winner, setWinner] = useState<Winner | null>(null)
   const [isRolling, setIsRolling] = useState(false)
+  const { cachedUrl, isLoading } = useCachedImage(
+    winner ? JSON.parse(winner.nft.metadata).image : undefined
+  )
 
   const selectWinner = () => {
     setIsRolling(true)
@@ -141,7 +145,11 @@ export function RollDice({ holders, nfts }: RollDiceProps) {
                       <div className="font-medium">
                         {JSON.parse(winner.nft.metadata).name}
                       </div>
-                      {JSON.parse(winner.nft.metadata).image && (
+                      {isLoading ? (
+                        <div className="w-32 h-32 flex items-center justify-center bg-muted rounded-lg mx-auto">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                        </div>
+                      ) : cachedUrl && (
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
@@ -149,7 +157,7 @@ export function RollDice({ holders, nfts }: RollDiceProps) {
                           className="mt-4"
                         >
                           <img
-                            src={JSON.parse(winner.nft.metadata).image}
+                            src={cachedUrl}
                             alt={JSON.parse(winner.nft.metadata).name}
                             className="w-32 h-32 object-cover rounded-lg mx-auto"
                           />

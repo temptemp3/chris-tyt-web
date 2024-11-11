@@ -38,6 +38,7 @@ export type NFT = {
     metadataURI: string;
     metadata: string;
     "mint-round": number;
+    collectionName: string;  // Changed from name
     isBurned: boolean;
 }
 
@@ -61,4 +62,11 @@ export type ChainAsset = {
 export type AccountBalance = {
     voi: number;
     arc200Tokens: ChainAsset[];
+}
+
+export type ContractGroup = {
+    contractId: number
+    collectionName: string  // Changed from name
+    description?: string
+    nfts: NFT[]
 }

@@ -1,118 +1,80 @@
 'use client'
 
-import { useState } from 'react'
-import type { NFT } from "@/types/nft"
+import { useState, useMemo, useEffect } from 'react'
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import type { NFT, ContractGroup } from "@/types"
 import { NFTGrid } from "./nft-grid"
-import * as Dialog from '@radix-ui/react-dialog'
-import { Button } from "../ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { XCircle } from "lucide-react"
+import { NFTModal } from "./nft-modal"
+import { CollectionTabs } from "./collection-tabs"
 
-type NFTPortfolioProps = {
+interface NFTPortfolioProps {
   nfts: NFT[]
 }
 
 export function NFTPortfolio({ nfts }: NFTPortfolioProps) {
   const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null)
+  const [activeContractId, setActiveContractId] = useState<number | null>(null)
 
-  const handleClose = () => setSelectedNFT(null)
+  const groupedNfts = useMemo(() => {
+    const grouped = nfts.reduce((acc: { [key: number]: ContractGroup }, nft) => {
+      if (!acc[nft.contractId]) {
+        const metadata = JSON.parse(nft.metadata)
+        acc[nft.contractId] = {
+          contractId: nft.contractId,
+          collectionName: nft.collectionName,
+          description: metadata.description,
+          nfts: []
+        }
+      }
+      acc[nft.contractId].nfts.push(nft)
+      return acc
+    }, {})
 
-  const renderPropertiesTable = (properties: Record<string, string>) => {
-    return (
-      <div className="grid grid-cols-3 gap-2">
-        {Object.entries(properties).map(([key, value]) => (
-          <div key={key} className="bg-primary/5 rounded-lg p-3">
-            <div className="text-xs text-muted-foreground uppercase">{key}</div>
-            <div className="font-medium truncate">{value}</div>
-          </div>
-        ))}
-      </div>
+    return Object.values(grouped).sort((a, b) => 
+      a.collectionName.localeCompare(b.collectionName)
     )
-  }
+  }, [nfts])
+
+  useEffect(() => {
+    if (groupedNfts.length > 0 && !activeContractId) {
+      setActiveContractId(groupedNfts[0].contractId)
+    }
+  }, [groupedNfts, activeContractId])
+
+  const activeGroup = groupedNfts.find(group => group.contractId === activeContractId)
 
   return (
-    <>
-      <NFTGrid 
-        nfts={nfts} 
-        onNFTClick={setSelectedNFT} 
+    <Card>
+      <CardHeader className="space-y-0 pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CardTitle>NFT Portfolio</CardTitle>
+            <span className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-xs font-medium">
+              {nfts.length} NFTs
+            </span>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CollectionTabs
+        collections={groupedNfts}
+        activeContractId={activeContractId}
+        onSelect={setActiveContractId}
       />
 
-      <Dialog.Root open={!!selectedNFT} onOpenChange={() => setSelectedNFT(null)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
-            {selectedNFT && selectedNFT.metadata && (
-              <div className="grid md:grid-cols-2 gap-6 p-6">
-                {/* Left side - Image */}
-                <Card className="border-0 shadow-none">
-                  <CardContent className="p-0">
-                    <div className="rounded-lg overflow-hidden bg-black/5">
-                      <img
-                        src={JSON.parse(selectedNFT.metadata).image}
-                        alt={JSON.parse(selectedNFT.metadata).name || `NFT #${selectedNFT.tokenId}`}
-                        className="w-full h-auto object-contain"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+      <CardContent className="pt-6">
+        {activeGroup && (
+          <NFTGrid 
+            nfts={activeGroup.nfts}
+            onNFTClick={setSelectedNFT}
+          />
+        )}
+      </CardContent>
 
-                {/* Right side - Metadata */}
-                <div className="space-y-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <Dialog.Title className="text-2xl font-bold">
-                        {JSON.parse(selectedNFT.metadata).name}
-                      </Dialog.Title>
-                      <Dialog.Description className="text-muted-foreground mt-1">
-                        {JSON.parse(selectedNFT.metadata).description}
-                      </Dialog.Description>
-                    </div>
-                    <Dialog.Close asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        aria-label="Close"
-                        className="hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <XCircle className="h-4 w-4" />
-                      </Button>
-                    </Dialog.Close>
-                  </div>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Details</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-2 gap-y-2 text-sm">
-                      <div className="text-muted-foreground">Contract ID</div>
-                      <div className="font-mono">{selectedNFT.contractId}</div>
-                      <div className="text-muted-foreground">Token ID</div>
-                      <div className="font-mono">{selectedNFT.tokenId}</div>
-                      <div className="text-muted-foreground">Mint Round</div>
-                      <div className="font-mono">{selectedNFT['mint-round']}</div>
-                    </CardContent>
-                  </Card>
-
-                  {JSON.parse(selectedNFT.metadata).properties && (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">Properties</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        {renderPropertiesTable(JSON.parse(selectedNFT.metadata).properties)}
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  <div className="text-xs text-muted-foreground">
-                    Image Integrity: <span className="font-mono">{JSON.parse(selectedNFT.metadata).image_integrity}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </>
+      <NFTModal 
+        nft={selectedNFT} 
+        onClose={() => setSelectedNFT(null)} 
+      />
+    </Card>
   )
 }
