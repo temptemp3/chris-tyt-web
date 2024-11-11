@@ -35,21 +35,16 @@ function useTokenHolders() {
             balance: parseInt(b.balance) / 1_000_000,
             address: b.accountId,
             percentage: 0 // Will be calculated below
-          }));
-
-        const totalBalance = holdersData.reduce((sum, b) => sum + b.balance, 0);
-        holdersData = holdersData
-          .map(holder => ({
-            ...holder,
-            percentage: (holder.balance / totalBalance) * 100
           }))
-          // Sort holders by balance in descending order
           .sort((a, b) => b.balance - a.balance);
 
+        const totalBalance = holdersData.reduce((sum, b) => sum + b.balance, 0);
+        holdersData = holdersData.map(holder => ({
+          ...holder,
+          percentage: (holder.balance / totalBalance) * 100
+        }));
+
         setCachedData('holders', holdersData);
-      } else {
-        // Also sort cached data (in case sorting wasn't implemented when cache was created)
-        holdersData = holdersData.sort((a, b) => b.balance - a.balance);
       }
 
       // Fetch NFTs data
@@ -81,9 +76,27 @@ function useTokenHolders() {
     }
   }, []);
 
-  const refreshData = useCallback(() => {
-    clearCache();
-    fetchData(true);
+  const refreshData = useCallback(async () => {
+    try {
+      // Clear all caches - both localStorage and IndexedDB
+      await clearCache();
+      
+      // Force reload images by revoking any existing object URLs
+      if (typeof window !== 'undefined') {
+        const objectUrls = Array.from(document.querySelectorAll('img'))
+          .map(img => img.src)
+          .filter(src => src.startsWith('blob:'));
+        
+        objectUrls.forEach(url => {
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      // Fetch fresh data
+      await fetchData(true);
+    } catch (err) {
+      console.error('Error refreshing data:', err);
+    }
   }, [fetchData]);
 
   useEffect(() => {
