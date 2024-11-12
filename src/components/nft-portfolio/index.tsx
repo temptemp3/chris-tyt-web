@@ -27,7 +27,7 @@ export function NFTPortfolio() {
   if (error) return <ErrorCard message={error} />
 
   return (
-    <Card>
+    <Card className="mt-6">
       <CardHeader className="space-y-0 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
