@@ -124,17 +124,28 @@ export function RollDice() {
                     <Trophy className="h-12 w-12 mx-auto text-yellow-500" />
                   </motion.div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <div className="text-lg font-semibold">Winner Selected!</div>
                     
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Wallet Address:</div>
-                      <CopyableAddress address={winner.holder.address} />
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">
+                        Wallet Address:
+                      </div>
+                      <div className="flex justify-center">
+                        <CopyableAddress 
+                          address={winner.holder.address}
+                          variant="address"
+                        />
+                      </div>
                     </div>
 
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Prize NFT:</div>
-                      <div className="font-medium">{winner.metadata.name}</div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">
+                        Prize NFT:
+                      </div>
+                      <div className="font-medium">
+                        {winner.metadata.name}
+                      </div>
                       <div className="mt-4">
                         <img
                           src={winner.metadata.image}
