@@ -6,28 +6,26 @@ import { Button } from "@/components/ui/button"
 import { Dice6, Trophy } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion'
 import type { NFT, TokenHolderDisplay } from "@/types"
-import { formatAddress } from "@/lib/utils"
-import * as Tooltip from '@radix-ui/react-tooltip'
-import { useCachedImage } from "@/lib/cache-utils"
-
-interface RollDiceProps {
-  holders: TokenHolderDisplay[]
-  nfts: NFT[]
-}
+import { CopyableAddress } from "@/components/ui/copyable-address"
+import { useData } from '@/providers/data-provider'
 
 interface Winner {
   holder: TokenHolderDisplay
   nft: NFT
+  metadata: {
+    name: string
+    image: string
+  }
 }
 
-export function RollDice({ holders, nfts }: RollDiceProps) {
+export function RollDice() {
+  const { holders, nfts, loading } = useData()
   const [winner, setWinner] = useState<Winner | null>(null)
   const [isRolling, setIsRolling] = useState(false)
-  const { cachedUrl, isLoading } = useCachedImage(
-    winner ? JSON.parse(winner.nft.metadata).image : undefined
-  )
 
   const selectWinner = () => {
+    if (holders.length === 0 || nfts.length === 0) return
+    
     setIsRolling(true)
     
     // Calculate total tokens for weighting
@@ -48,17 +46,26 @@ export function RollDice({ holders, nfts }: RollDiceProps) {
       }
     }
 
-    // Select random NFT
+    // Select random NFT and parse metadata
     const randomNFT = nfts[Math.floor(Math.random() * nfts.length)]
+    const metadata = JSON.parse(randomNFT.metadata)
 
     // Simulate dice roll animation timing
     setTimeout(() => {
       setWinner({
         holder: selectedHolder,
-        nft: randomNFT
+        nft: randomNFT,
+        metadata: {
+          name: metadata.name,
+          image: metadata.image
+        }
       })
       setIsRolling(false)
     }, 2000)
+  }
+
+  if (loading || holders.length === 0 || nfts.length === 0) {
+    return null
   }
 
   return (
@@ -122,47 +129,20 @@ export function RollDice({ holders, nfts }: RollDiceProps) {
                     
                     <div className="space-y-1">
                       <div className="text-sm text-muted-foreground">Wallet Address:</div>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <div className="font-mono cursor-help">
-                            {formatAddress(winner.holder.address, 8)}
-                          </div>
-                        </Tooltip.Trigger>
-                        <Tooltip.Portal>
-                          <Tooltip.Content
-                            className="bg-black/90 text-white px-3 py-1.5 rounded-md text-sm font-mono"
-                            sideOffset={5}
-                          >
-                            {winner.holder.address}
-                            <Tooltip.Arrow className="fill-black/90" />
-                          </Tooltip.Content>
-                        </Tooltip.Portal>
-                      </Tooltip.Root>
+                      <CopyableAddress address={winner.holder.address} />
                     </div>
 
                     <div className="space-y-1">
                       <div className="text-sm text-muted-foreground">Prize NFT:</div>
-                      <div className="font-medium">
-                        {JSON.parse(winner.nft.metadata).name}
+                      <div className="font-medium">{winner.metadata.name}</div>
+                      <div className="mt-4">
+                        <img
+                          src={winner.metadata.image}
+                          alt={winner.metadata.name}
+                          className="w-32 h-32 object-cover rounded-lg mx-auto"
+                          loading="lazy"
+                        />
                       </div>
-                      {isLoading ? (
-                        <div className="w-32 h-32 flex items-center justify-center bg-muted rounded-lg mx-auto">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-                        </div>
-                      ) : cachedUrl && (
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.4 }}
-                          className="mt-4"
-                        >
-                          <img
-                            src={cachedUrl}
-                            alt={JSON.parse(winner.nft.metadata).name}
-                            className="w-32 h-32 object-cover rounded-lg mx-auto"
-                          />
-                        </motion.div>
-                      )}
                     </div>
                   </div>
                 </div>

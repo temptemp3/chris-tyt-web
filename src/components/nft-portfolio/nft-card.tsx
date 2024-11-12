@@ -1,8 +1,7 @@
 'use client'
 
 import type { NFT, NFTMetadata } from "@/types"
-import { Card, CardContent } from "../ui/card"
-import { useCachedImage } from "@/lib/cache-utils"
+import { Card, CardContent } from "@/components/ui/card"
 
 interface NFTCardProps {
   nft: NFT
@@ -11,8 +10,6 @@ interface NFTCardProps {
 }
 
 export function NFTCard({ nft, metadata, onClick }: NFTCardProps) {
-  const { cachedUrl, isLoading } = useCachedImage(metadata.image)
-
   return (
     <Card 
       className="cursor-pointer group transition-all duration-300 hover:shadow-lg"
@@ -21,15 +18,12 @@ export function NFTCard({ nft, metadata, onClick }: NFTCardProps) {
       <CardContent className="p-4">
         <div className="relative w-full pt-[100%] overflow-hidden">
           <div className="absolute inset-0">
-            {isLoading ? (
-              <div className="w-full h-full flex items-center justify-center bg-muted">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-              </div>
-            ) : cachedUrl ? (
+            {metadata.image ? (
               <img 
-                src={cachedUrl}
+                src={metadata.image}
                 alt={metadata.name || `NFT #${nft.tokenId}`}
                 className="w-full h-full object-cover rounded-lg transition-transform group-hover:scale-105"
+                loading="lazy"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-muted rounded-lg">

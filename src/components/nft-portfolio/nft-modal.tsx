@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { XCircle } from "lucide-react"
 import { motion } from 'framer-motion'
-import { useCachedImage } from "@/lib/cache-utils"
 
 interface NFTModalProps {
   nft: NFT | null
@@ -27,10 +26,6 @@ function renderPropertiesTable(properties: Record<string, string>) {
 }
 
 export function NFTModal({ nft, onClose }: NFTModalProps) {
-  const { cachedUrl, isLoading } = useCachedImage(
-    nft ? JSON.parse(nft.metadata).image : undefined
-  )
-
   if (!nft) return null
 
   const metadata = JSON.parse(nft.metadata)
@@ -45,19 +40,19 @@ export function NFTModal({ nft, onClose }: NFTModalProps) {
             <Card className="border-0 shadow-none">
               <CardContent className="p-0">
                 <div className="rounded-lg overflow-hidden bg-black/5">
-                  {isLoading ? (
-                    <div className="w-full h-64 flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-                    </div>
-                  ) : cachedUrl && (
+                  {metadata.image ? (
                     <motion.img
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                      src={cachedUrl}
+                      transition={{ duration: 0.3 }}
+                      src={metadata.image}
                       alt={metadata.name || `NFT #${nft.tokenId}`}
                       className="w-full h-auto object-contain"
                     />
+                  ) : (
+                    <div className="w-full h-64 flex items-center justify-center bg-muted">
+                      <span className="text-4xl">🖼️</span>
+                    </div>
                   )}
                 </div>
               </CardContent>

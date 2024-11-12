@@ -1,8 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import type { NFT } from "@/types"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { NFTCard } from "./nft-card"
@@ -10,36 +8,19 @@ import { NFTCard } from "./nft-card"
 interface NFTGridProps {
   nfts: NFT[]
   onNFTClick: (nft: NFT) => void
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
 }
 
-export function NFTGrid({ nfts, onNFTClick }: NFTGridProps) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(12)
-
-  useEffect(() => {
-    const updateItemsPerPage = () => {
-      setItemsPerPage(window.innerWidth >= 768 ? 12 : 4)
-    }
-
-    updateItemsPerPage()
-    window.addEventListener('resize', updateItemsPerPage)
-    return () => window.removeEventListener('resize', updateItemsPerPage)
-  }, [])
-
-  const totalPages = Math.ceil(nfts.length / itemsPerPage)
-
-  // Reset to first page when collection changes
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [nfts])
-
-  const getCurrentPageItems = () => {
-    const start = (currentPage - 1) * itemsPerPage
-    const end = start + itemsPerPage
-    return nfts.slice(start, end)
-  }
-
-  if (nfts.length <= itemsPerPage) {
+export function NFTGrid({ 
+  nfts, 
+  onNFTClick, 
+  currentPage, 
+  totalPages,
+  onPageChange 
+}: NFTGridProps) {
+  if (totalPages <= 1) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {nfts.map((nft) => {
@@ -65,7 +46,7 @@ export function NFTGrid({ nfts, onNFTClick }: NFTGridProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {getCurrentPageItems().map((nft) => {
+        {nfts.map((nft) => {
           try {
             const metadata = JSON.parse(nft.metadata)
             return (
@@ -87,7 +68,7 @@ export function NFTGrid({ nfts, onNFTClick }: NFTGridProps) {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -98,7 +79,7 @@ export function NFTGrid({ nfts, onNFTClick }: NFTGridProps) {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
         >
           <ChevronRight className="h-4 w-4" />
