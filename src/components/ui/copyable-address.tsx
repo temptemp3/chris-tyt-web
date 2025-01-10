@@ -8,20 +8,22 @@ import { useClipboard } from "@/hooks/useClipboard"
 
 interface CopyableAddressProps {
   address: string
+  name?: string
   truncateLength?: number
-  variant?: 'address' | 'numeric'
+  variant?: 'address' | 'numeric' | 'name'
 }
 
 export function CopyableAddress({ 
   address, 
+  name,
   truncateLength = 8,
-  variant = 'address'
+  variant = 'address',
 }: CopyableAddressProps) {
   const { copy, copied } = useClipboard()
   
   const displayValue = variant === 'address' 
     ? formatAddress(address, truncateLength)
-    : address
+    : variant === 'name' ? !!name ? name : formatAddress(address, truncateLength) : address
 
   return (
     <div className="flex items-center gap-2">

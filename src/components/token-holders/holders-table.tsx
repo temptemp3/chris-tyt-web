@@ -24,7 +24,8 @@ export function HoldersTable({ holders }: HoldersTableProps) {
               <td className="p-2 border-b">
                 <CopyableAddress 
                   address={holder.address}
-                  variant="address"
+                  name={holder.name}
+                  variant={"name"}
                   truncateLength={8}
                 />
               </td>
