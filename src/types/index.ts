@@ -34,6 +34,7 @@ export interface ChainAsset {
   
   export interface TokenHolderDisplay {
     address: string
+    name: string
     balance: number
     percentage: number
   }
