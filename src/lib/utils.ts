@@ -36,3 +36,32 @@ export async function getVoiBalance(address: string): Promise<number> {
     return 0
   }
 }
+
+export async function fetchVoiName(address: string): Promise<string | null> {
+  try {
+    const response = await fetch(`https://api.envoi.sh/api/name/${address}`)
+    // if (!response.ok) {
+    //   console.error(`Failed to fetch .voi name for address: ${address}`)
+    //   return null
+    // }
+    const data = await response.json()
+    const result = data.results?.[0]?.name || null
+    return result
+  } catch (error) {
+    console.error(`Error fetching .voi name: ${error}`)
+    return null
+  }
+}
+
+export function isApplicationAddress(address: string, appId: number): boolean {
+  // Validate if it's a valid Algorand address
+  if (!algosdk.isValidAddress(address)) {
+    return false;
+  }
+  
+  // Generate the expected application address from the appId
+  const expectedAppAddress = algosdk.getApplicationAddress(appId);
+  
+  // Compare with the provided address
+  return address === expectedAppAddress.toString();
+}

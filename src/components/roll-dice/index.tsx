@@ -8,6 +8,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { NFT, TokenHolderDisplay } from "@/types"
 import { CopyableAddress } from "@/components/ui/copyable-address"
 import { useData } from '@/providers/data-provider'
+import { fetchVoiName } from '@/lib/utils'
+import { CONFIG } from "@/config"
+import { useWallet } from '@txnlab/use-wallet-react'
 
 interface Winner {
   holder: TokenHolderDisplay
@@ -16,28 +19,36 @@ interface Winner {
     name: string
     image: string
   }
+  voiName?: string | null
 }
 
 export function RollDice() {
   const { holders, nfts, loading } = useData()
+  const { activeAccount } = useWallet() // Get the connected wallet
   const [winner, setWinner] = useState<Winner | null>(null)
   const [isRolling, setIsRolling] = useState(false)
 
-  const selectWinner = () => {
-    if (holders.length === 0 || nfts.length === 0) return
-    
+  // Creator's wallet address from CONFIG
+  const creatorAddress = CONFIG.WALLET_ADDRESS
+
+  // Check if the connected wallet matches the creator's wallet
+  const isCreatorWalletConnected = activeAccount?.address === creatorAddress
+
+  const selectWinner = async () => {
+    if (!holders || holders.length === 0 || !nfts || nfts.length === 0) return
+
     setIsRolling(true)
-    
+
     // Calculate total tokens for weighting
     const totalTokens = holders.reduce((sum, holder) => sum + holder.balance, 0)
-    
+
     // Generate random number between 0 and total tokens
     const randomPoint = Math.random() * totalTokens
-    
+
     // Find the winner based on weighted probability
     let accumulator = 0
     let selectedHolder = holders[0]
-    
+
     for (const holder of holders) {
       accumulator += holder.balance
       if (randomPoint <= accumulator) {
@@ -50,6 +61,9 @@ export function RollDice() {
     const randomNFT = nfts[Math.floor(Math.random() * nfts.length)]
     const metadata = JSON.parse(randomNFT.metadata)
 
+    // Fetch .voi name for the winner's address
+    const voiName = await fetchVoiName(selectedHolder.address)
+
     // Simulate dice roll animation timing
     setTimeout(() => {
       setWinner({
@@ -58,13 +72,21 @@ export function RollDice() {
         metadata: {
           name: metadata.name,
           image: metadata.image
-        }
+        },
+        voiName // Store .voi name
       })
       setIsRolling(false)
     }, 2000)
   }
 
-  if (loading || holders.length === 0 || nfts.length === 0) {
+  const handleTransfer = () => {
+    if (winner) {
+      console.log(`Transferring NFT to ${winner.holder.address}`)
+      // Add transfer logic here
+    }
+  }
+
+  if (!holders || holders.length === 0 || !nfts || nfts.length === 0) {
     return null
   }
 
@@ -132,10 +154,14 @@ export function RollDice() {
                         Wallet Address:
                       </div>
                       <div className="flex justify-center">
-                        <CopyableAddress 
-                          address={winner.holder.address}
-                          variant="address"
-                        />
+                        {winner.voiName ? (
+                          <span className="font-medium">{winner.voiName}</span>
+                        ) : (
+                          <CopyableAddress 
+                            address={winner.holder.address}
+                            variant="address"
+                          />
+                        )}
                       </div>
                     </div>
 
@@ -155,6 +181,13 @@ export function RollDice() {
                         />
                       </div>
                     </div>
+
+                    {/* Show Transfer Button Only if Creator's Wallet is Connected */}
+                    {isCreatorWalletConnected && (
+                      <Button onClick={handleTransfer} className="mt-4">
+                        Transfer to Winner
+                      </Button>
+                    )}
                   </div>
                 </div>
               </motion.div>

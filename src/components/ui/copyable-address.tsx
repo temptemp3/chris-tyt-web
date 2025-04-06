@@ -19,11 +19,15 @@ export function CopyableAddress({
   truncateLength = 8,
   variant = 'address',
 }: CopyableAddressProps) {
-  const { copy, copied } = useClipboard()
-  
+  const { copy, copiedText } = useClipboard() // Use copiedText instead of copied
+
   const displayValue = variant === 'address' 
     ? formatAddress(address, truncateLength)
-    : variant === 'name' ? !!name ? name : formatAddress(address, truncateLength) : address
+    : variant === 'name' 
+    ? name || formatAddress(address, truncateLength) 
+    : address
+
+  const isCopied = copiedText === address // Check if the copied text matches the current address
 
   return (
     <div className="flex items-center gap-2">
@@ -50,7 +54,7 @@ export function CopyableAddress({
         onClick={() => copy(address)}
         title="Copy"
       >
-        {copied(address) ? (
+        {isCopied ? (
           <CheckCircle2 className="h-4 w-4 text-green-500" />
         ) : (
           <Copy className="h-4 w-4" />
