@@ -62,11 +62,11 @@ export function TokenDetails() {
                   />
                   {isCreatorWalletConnected ? (
                     <p className="text-xs text-green-500 mt-1">
-                      This is the creator's wallet
+                      This is the creator&apos;s wallet
                     </p>
                   ) : (
                     <p className="text-xs text-red-500 mt-1">
-                      Wallet does not match the creator's wallet
+                      Wallet does not match the creator&apos;s wallet
                     </p>
                   )}
                   <Button onClick={handleDisconnect} className="mt-2">
