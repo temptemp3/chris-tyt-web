@@ -12,10 +12,9 @@ export function AppBar() {
   const [voiName, setVoiName] = useState<string | null>(null)
   const [ctytBalance, setCtytBalance] = useState<number | null>(null)
 
-  // Fetch the .voi name and CTYT balance for the connected wallet
   useEffect(() => {
     const fetchWalletDetails = async () => {
-      if (typeof window === 'undefined') return; // Ensure runs only on client
+      if (typeof window === 'undefined') return; 
 
       if (activeAccount?.address) {
         const name = await fetchVoiName(activeAccount.address)

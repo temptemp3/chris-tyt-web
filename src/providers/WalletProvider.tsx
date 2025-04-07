@@ -5,30 +5,30 @@ import { WalletProvider, WalletManager, NetworkId, WalletId } from '@txnlab/use-
 const manager = new WalletManager({
   wallets: [
     {
-      id: WalletId.KIBISIS, // Use Kibisis wallet only
+      id: WalletId.KIBISIS, 
       metadata: {
-        name: 'Chris Thank You Tokens', // App name
-        icon: 'https://yourdomain.com/images/chris-tyt.png', // Direct token icon URL
+        name: 'Chris Thank You Tokens', 
+        icon: 'https://yourdomain.com/images/chris-tyt.png', 
       },
     },
   ],
   networks: {
     [NetworkId.MAINNET]: {
       algod: {
-        baseServer: 'https://mainnet-api.algonode.cloud', // Mainnet Algod API
+        baseServer: 'https://mainnet-api.algonode.cloud', 
         port: '',
         token: '',
       },
     },
     [NetworkId.TESTNET]: {
       algod: {
-        baseServer: 'https://testnet-api.algonode.cloud', // Testnet Algod API
+        baseServer: 'https://testnet-api.algonode.cloud', 
         port: '',
         token: '',
       },
     },
   },
-  defaultNetwork: NetworkId.MAINNET, // Ensure the default network is set correctly
+  defaultNetwork: NetworkId.MAINNET, 
 })
 
 export function WalletProviderWrapper({ children }: { children: React.ReactNode }) {

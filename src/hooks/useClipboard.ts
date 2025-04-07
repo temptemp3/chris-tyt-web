@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 
 interface UseClipboardOptions {
-  /** How long to show the "copied" state in milliseconds */
   timeout?: number
 }
 

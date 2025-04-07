@@ -10,7 +10,7 @@ export function TokenHolders() {
     holders, 
     loading, 
     error, 
-    setSearchTerm // Expose setSearchTerm for search functionality
+    setSearchTerm 
   } = useTokenHolders()
 
   if (loading) {
@@ -32,7 +32,6 @@ export function TokenHolders() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Search Input */}
         <div className="mb-4">
           <input
             type="text"

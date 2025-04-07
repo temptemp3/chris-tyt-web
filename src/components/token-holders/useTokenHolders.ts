@@ -3,7 +3,6 @@ import { CONFIG } from '@/config'
 import type { TokenHolderDisplay, TokenBalanceResponse } from '@/types'
 import envoiSDK from '@xarmian/envoi-sdk';
 
-// Initialize with Algod node configuration
 const resolver = envoiSDK.init({
   token: "",
   url: CONFIG.APIS.VOI_NODE,
@@ -15,7 +14,7 @@ export function useTokenHolders() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date())
-  const [searchTerm, setSearchTerm] = useState('') // Added search term state
+  const [searchTerm, setSearchTerm] = useState('') 
 
   const fetchHolders = useCallback(async () => {
     try {
@@ -80,18 +79,17 @@ export function useTokenHolders() {
     fetchData()
   }, [fetchData])
 
-  // Filter holders based on the search term
   const filteredHolders = holders.filter(holder =>
     holder.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
     holder.name?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return { 
-    holders: filteredHolders, // Return filtered holders
+    holders: filteredHolders, 
     loading, 
     error, 
     lastRefresh,
     refreshData: fetchData,
-    setSearchTerm // Expose setSearchTerm to update the search term
+    setSearchTerm 
   }
 }

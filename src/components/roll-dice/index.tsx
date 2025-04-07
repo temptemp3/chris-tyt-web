@@ -24,7 +24,7 @@ interface Winner {
 
 export function RollDice() {
   const { holders, nfts, loading } = useData()
-  const { activeAccount } = useWallet() // Get the connected wallet
+  const { activeAccount } = useWallet() 
   const [winner, setWinner] = useState<Winner | null>(null)
   const [isRolling, setIsRolling] = useState(false)
 
@@ -33,13 +33,10 @@ export function RollDice() {
 
     setIsRolling(true)
 
-    // Calculate total tokens for weighting
     const totalTokens = holders.reduce((sum, holder) => sum + holder.balance, 0)
 
-    // Generate random number between 0 and total tokens
     const randomPoint = Math.random() * totalTokens
 
-    // Find the winner based on weighted probability
     let accumulator = 0
     let selectedHolder = holders[0]
 
@@ -51,14 +48,11 @@ export function RollDice() {
       }
     }
 
-    // Select random NFT and parse metadata
     const randomNFT = nfts[Math.floor(Math.random() * nfts.length)]
     const metadata = JSON.parse(randomNFT.metadata)
 
-    // Fetch .voi name for the winner's address
     const voiName = await fetchVoiName(selectedHolder.address)
 
-    // Simulate dice roll animation timing
     setTimeout(() => {
       setWinner({
         holder: selectedHolder,
@@ -67,7 +61,7 @@ export function RollDice() {
           name: metadata.name,
           image: metadata.image
         },
-        voiName // Store .voi name
+        voiName 
       })
       setIsRolling(false)
     }, 2000)
@@ -76,7 +70,6 @@ export function RollDice() {
   const handleTransfer = () => {
     if (winner) {
       console.log(`Transferring NFT to ${winner.holder.address}`)
-      // Add transfer logic here
     }
   }
 

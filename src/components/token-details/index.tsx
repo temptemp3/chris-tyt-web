@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { CopyableAddress } from "@/components/ui/copyable-address"
-import { formatAddress } from "@/lib/utils" // Utility to shorten the address
+import { formatAddress } from "@/lib/utils" 
 import { useTokenDetails } from "./useTokenDetails"
 import { CONFIG } from "@/config"
 import * as Tooltip from '@radix-ui/react-tooltip'
@@ -26,7 +26,7 @@ export function TokenDetails() {
               </p>
               {activeAccount && activeAccount.address ? (
                 <CopyableAddress
-                  address={formatAddress(activeAccount.address)} // Shortened address
+                  address={formatAddress(activeAccount.address)} 
                   variant="address"
                 />
               ) : (

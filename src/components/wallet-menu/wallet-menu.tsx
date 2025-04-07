@@ -7,12 +7,10 @@ import { Button } from '@/components/ui/button'
 export function WalletMenu() {
   const { wallets, activeWallet } = useWallet()
 
-  // If a wallet is connected, show the connected wallet view
   if (activeWallet) {
     return <ConnectedWallet wallet={activeWallet} />
   }
 
-  // Otherwise, show the wallet selection list
   return <WalletList wallets={wallets} />
 }
 
@@ -64,7 +62,6 @@ function WalletOption({ wallet }: { wallet: Wallet }) {
 function ConnectedWallet({ wallet }: { wallet: Wallet }) {
   return (
     <div className="connected-wallet space-y-4">
-      {/* Wallet header */}
       <div className="wallet-header flex items-center space-x-2">
         <img
           src={wallet.metadata.icon}
@@ -75,8 +72,6 @@ function ConnectedWallet({ wallet }: { wallet: Wallet }) {
         />
         <span className="font-medium">{wallet.metadata.name}</span>
       </div>
-
-      {/* Account selector */}
       {wallet.accounts.length > 1 && (
         <select
           value={wallet.activeAccount?.address}
@@ -90,8 +85,6 @@ function ConnectedWallet({ wallet }: { wallet: Wallet }) {
           ))}
         </select>
       )}
-
-      {/* Account details */}
       {wallet.activeAccount && (
         <div className="account-info">
           <p className="text-sm font-medium">{wallet.activeAccount.name}</p>
@@ -100,8 +93,6 @@ function ConnectedWallet({ wallet }: { wallet: Wallet }) {
           </p>
         </div>
       )}
-
-      {/* Disconnect button */}
       <Button onClick={wallet.disconnect} className="mt-2">
         Disconnect
       </Button>

@@ -7,7 +7,6 @@ import { NFTPortfolio } from '@/components/nft-portfolio'
 import { TokenHolders } from '@/components/token-holders'
 import { RollDice } from '@/components/roll-dice'
 
-// Dynamically import the named export AppBar and disable SSR
 const AppBarNoSSR = dynamic(
   () => import('@/components/ui/AppBar').then((mod) => mod.AppBar),
   { ssr: false }

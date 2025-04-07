@@ -19,7 +19,7 @@ export function CopyableAddress({
   truncateLength = 8,
   variant = 'address',
 }: CopyableAddressProps) {
-  const { copy, copiedText } = useClipboard() // Use copiedText instead of copied
+  const { copy, copiedText } = useClipboard() 
 
   const displayValue = variant === 'address' 
     ? formatAddress(address, truncateLength)
@@ -27,7 +27,7 @@ export function CopyableAddress({
     ? name || formatAddress(address, truncateLength) 
     : address
 
-  const isCopied = copiedText === address // Check if the copied text matches the current address
+  const isCopied = copiedText === address 
 
   return (
     <div className="flex items-center gap-2">

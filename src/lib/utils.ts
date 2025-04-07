@@ -29,7 +29,6 @@ const algodClient = new algosdk.Algodv2(
 export async function getVoiBalance(address: string): Promise<number> {
   try {
     const accountInfo = await algodClient.accountInformation(address).do()
-    // Convert bigint to number and then divide by 1_000_000
     return Number(accountInfo.amount) / 1_000_000
   } catch (err) {
     console.error('Error fetching VOI balance:', err)
@@ -54,14 +53,11 @@ export async function fetchVoiName(address: string): Promise<string | null> {
 }
 
 export function isApplicationAddress(address: string, appId: number): boolean {
-  // Validate if it's a valid Algorand address
   if (!algosdk.isValidAddress(address)) {
     return false;
   }
-  
-  // Generate the expected application address from the appId
+
   const expectedAppAddress = algosdk.getApplicationAddress(appId);
-  
-  // Compare with the provided address
+
   return address === expectedAppAddress.toString();
 }
