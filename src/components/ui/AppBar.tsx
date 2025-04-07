@@ -14,8 +14,7 @@ export function AppBar() {
 
   useEffect(() => {
     const fetchWalletDetails = async () => {
-      if (typeof window === 'undefined') return; 
-
+      if (typeof window === 'undefined') return
       if (activeAccount?.address) {
         const name = await fetchVoiName(activeAccount.address)
         setVoiName(name)
@@ -53,7 +52,8 @@ export function AppBar() {
 
   return (
     <div className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
-      <div className="text-lg font-bold">
+      <div className="flex items-center gap-2 text-lg font-bold">
+      <img src="/images/chris-tyt.png" alt="Site Icon" className="h-[40px] w-[40px]" />
         <span className="hidden sm:inline">Chris Thank You Tokens</span>
         <span className="sm:hidden">CTYT</span>
       </div>
@@ -76,7 +76,6 @@ export function AppBar() {
           Connect Wallet
         </Button>
       )}
-
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
           <div className="p-6">

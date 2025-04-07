@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { CopyableAddress } from "@/components/ui/copyable-address"
-import { formatAddress } from "@/lib/utils" 
+import { formatAddress } from "@/lib/utils"
 import { useTokenDetails } from "./useTokenDetails"
 import { CONFIG } from "@/config"
 import * as Tooltip from '@radix-ui/react-tooltip'
@@ -22,11 +22,11 @@ export function TokenDetails() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="space-y-1">
               <p className="font-medium text-sm text-muted-foreground">
-                Connected Wallet Address
+                Creator Wallet Address
               </p>
               {activeAccount && activeAccount.address ? (
                 <CopyableAddress
-                  address={formatAddress(activeAccount.address)} 
+                  address={formatAddress(activeAccount.address)}
                   variant="address"
                 />
               ) : (
