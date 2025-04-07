@@ -28,12 +28,6 @@ export function RollDice() {
   const [winner, setWinner] = useState<Winner | null>(null)
   const [isRolling, setIsRolling] = useState(false)
 
-  // Creator's wallet address from CONFIG
-  const creatorAddress = CONFIG.WALLET_ADDRESS
-
-  // Check if the connected wallet matches the creator's wallet
-  const isCreatorWalletConnected = activeAccount?.address === creatorAddress
-
   const selectWinner = async () => {
     if (!holders || holders.length === 0 || !nfts || nfts.length === 0) return
 
@@ -102,7 +96,7 @@ export function RollDice() {
         <div className="space-y-6">
           <div className="text-muted-foreground">
             Press the button below to show an example of randomly selecting a winner from the token holders.
-            The chance of winning is proportional to the amount of tokens they hold - 
+            The chance of winning is proportional to the amount of tokens they hold -
             the more tokens they have, the better their chances!
           </div>
 
@@ -182,12 +176,9 @@ export function RollDice() {
                       </div>
                     </div>
 
-                    {/* Show Transfer Button Only if Creator's Wallet is Connected */}
-                    {isCreatorWalletConnected && (
-                      <Button onClick={handleTransfer} className="mt-4">
-                        Transfer to Winner
-                      </Button>
-                    )}
+                    <Button onClick={handleTransfer} className="mt-4">
+                      Transfer to Winner
+                    </Button>
                   </div>
                 </div>
               </motion.div>

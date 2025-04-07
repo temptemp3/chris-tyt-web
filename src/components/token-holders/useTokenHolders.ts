@@ -10,12 +10,12 @@ const resolver = envoiSDK.init({
   port: 443
 });
 
-
 export function useTokenHolders() {
   const [holders, setHolders] = useState<TokenHolderDisplay[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date())
+  const [searchTerm, setSearchTerm] = useState('') // Added search term state
 
   const fetchHolders = useCallback(async () => {
     try {
@@ -80,11 +80,18 @@ export function useTokenHolders() {
     fetchData()
   }, [fetchData])
 
+  // Filter holders based on the search term
+  const filteredHolders = holders.filter(holder =>
+    holder.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    holder.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return { 
-    holders, 
+    holders: filteredHolders, // Return filtered holders
     loading, 
     error, 
     lastRefresh,
-    refreshData: fetchData 
+    refreshData: fetchData,
+    setSearchTerm // Expose setSearchTerm to update the search term
   }
 }

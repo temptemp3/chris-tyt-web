@@ -9,7 +9,8 @@ export function TokenHolders() {
   const { 
     holders, 
     loading, 
-    error
+    error, 
+    setSearchTerm // Expose setSearchTerm for search functionality
   } = useTokenHolders()
 
   if (loading) {
@@ -31,6 +32,15 @@ export function TokenHolders() {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Search Input */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search holders..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
         <HoldersTable holders={holders} />
       </CardContent>
     </Card>
