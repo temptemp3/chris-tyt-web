@@ -23,7 +23,6 @@ export function HoldersTable({ holders }: HoldersTableProps) {
     async function enrichHolders() {
       const results = await Promise.all(
         holders.map(async (holder) => {
-          // Attempt to fetch the .voi name for this holder’s address
           const voiName = await fetchVoiName(holder.address)
           return { ...holder, voiName }
         })
@@ -38,8 +37,8 @@ export function HoldersTable({ holders }: HoldersTableProps) {
   const totalPages = Math.ceil(extendedHolders.length / rowsPerPage)
 
   return (
-    <div>
-      <table className="w-full border-collapse">
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse min-w-max">
         <thead>
           <tr>
             <th className="text-left p-2 border-b">Address</th>

@@ -15,14 +15,11 @@ export function AppBar() {
   // Fetch the .voi name and CTYT balance for the connected wallet
   useEffect(() => {
     const fetchWalletDetails = async () => {
-      if (typeof window === 'undefined') return; // Ensure this runs only on the client
+      if (typeof window === 'undefined') return; // Ensure runs only on client
 
       if (activeAccount?.address) {
-        // Fetch .voi name
         const name = await fetchVoiName(activeAccount.address)
         setVoiName(name)
-
-        // Fetch CTYT balance (using the provided utility)
         const balance = await getVoiBalance(activeAccount.address)
         setCtytBalance(balance)
       }
@@ -35,17 +32,15 @@ export function AppBar() {
     if (wallet) {
       try {
         await wallet.connect()
-        setIsModalOpen(false) // Close the modal after connecting
+        setIsModalOpen(false)
       } catch (error) {
         console.error('Failed to connect:', error)
       }
-    } else {
-      console.error('Wallet not found')
     }
   }
 
   const handleDisconnect = async () => {
-    const wallet = wallets.find((w) => w.id === WalletId.KIBISIS) // Ensure Kibisis is used
+    const wallet = wallets.find((w) => w.id === WalletId.KIBISIS)
     if (wallet) {
       try {
         await wallet.disconnect()
@@ -54,28 +49,26 @@ export function AppBar() {
       } catch (error) {
         console.error('Failed to disconnect:', error)
       }
-    } else {
-      console.error('Kibisis wallet not found')
     }
   }
 
   return (
     <div className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
-      <div className="text-lg font-bold">Chris Thank You Tokens</div>
+      <div className="text-lg font-bold">
+        <span className="hidden sm:inline">Chris Thank You Tokens</span>
+        <span className="sm:hidden">CTYT</span>
+      </div>
       {activeAccount ? (
         <div className="flex items-center gap-4">
           <div>
             <span className="block text-sm font-medium">
-              {voiName || formatAddress(activeAccount.address, 8)} {/* Show .voi name or shortened address */}
+              {voiName || formatAddress(activeAccount.address, 8)}
             </span>
             <span className="block text-xs text-gray-300">
               CTYT Balance: {ctytBalance !== null ? `${ctytBalance.toFixed(2)} CTYT` : 'Loading...'}
             </span>
           </div>
-          <Button
-            onClick={handleDisconnect} // Use the updated disconnect logic
-            className="bg-red-500 hover:bg-red-600"
-          >
+          <Button onClick={handleDisconnect} className="bg-red-500 hover:bg-red-600">
             Disconnect
           </Button>
         </div>
@@ -85,7 +78,6 @@ export function AppBar() {
         </Button>
       )}
 
-      {/* Modal for Wallet Options */}
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
           <div className="p-6">
@@ -97,7 +89,6 @@ export function AppBar() {
               >
                 Connect Kibisis Wallet
               </Button>
-              {/* Add more wallet options here if needed */}
             </div>
           </div>
         </Modal>
