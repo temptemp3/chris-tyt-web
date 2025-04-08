@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Modal } from "./modal"
-import { useWallet, WalletId } from '@txnlab/use-wallet-react'
+import { useWallet } from '@txnlab/use-wallet-react'
 import { fetchVoiName, formatAddress, getVoiBalance } from '@/lib/utils'
 
 export function AppBar() {
@@ -25,7 +25,7 @@ export function AppBar() {
     fetchWalletDetails()
   }, [activeAccount?.address])
 
-  const handleConnect = async (walletId: WalletId) => {
+  const handleConnect = async (walletId: string) => {
     const wallet = wallets.find((w) => w.id === walletId)
     if (wallet) {
       try {
@@ -34,18 +34,22 @@ export function AppBar() {
       } catch (error) {
         console.error('Failed to connect:', error)
       }
+    } else {
+      alert(`Can't find ${walletId} wallet. Please ensure it is installed or supported.`)
     }
   }
 
   const handleDisconnect = async () => {
-    const wallet = wallets.find((w) => w.id === WalletId.KIBISIS)
-    if (wallet) {
-      try {
-        await wallet.disconnect()
-        setVoiName(null)
-        setCtytBalance(null)
-      } catch (error) {
-        console.error('Failed to disconnect:', error)
+    if (activeAccount) {
+      const wallet = wallets.find((w) => w.accounts.some((acc) => acc.address === activeAccount.address))
+      if (wallet) {
+        try {
+          await wallet.disconnect()
+          setVoiName(null)
+          setCtytBalance(null)
+        } catch (error) {
+          console.error('Failed to disconnect:', error)
+        }
       }
     }
   }
@@ -53,7 +57,7 @@ export function AppBar() {
   return (
     <div className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
       <div className="flex items-center gap-2 text-lg font-bold">
-      <img src="/images/chris-tyt.png" alt="Site Icon" className="h-[40px] w-[40px]" />
+        <img src="/images/chris-tyt.png" alt="Site Icon" className="h-[40px] w-[40px]" />
         <span className="hidden sm:inline">Chris Thank You Tokens</span>
         <span className="sm:hidden">CTYT</span>
       </div>
@@ -81,12 +85,18 @@ export function AppBar() {
           <div className="p-6">
             <h2 className="text-lg font-semibold mb-4">Connect Wallet</h2>
             <div className="space-y-4">
-              <Button
-                onClick={() => handleConnect(WalletId.KIBISIS)}
-                className="w-full bg-gray-700 hover:bg-gray-800"
-              >
-                Connect Kibisis Wallet
-              </Button>
+              {wallets.map((wallet) => (
+                <Button
+                  key={wallet.id}
+                  onClick={() => handleConnect(wallet.id)}
+                  className="w-full bg-gray-700 hover:bg-gray-800"
+                >
+                  Connect {wallet.metadata.name}
+                </Button>
+              ))}
+              {wallets.length === 0 && (
+                <p className="text-gray-500">No supported wallets found. Please install a wallet.</p>
+              )}
             </div>
           </div>
         </Modal>

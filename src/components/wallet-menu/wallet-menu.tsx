@@ -15,11 +15,15 @@ export function WalletMenu() {
 }
 
 function WalletList({ wallets }: { wallets: Wallet[] }) {
+  const filteredWallets = wallets.filter((wallet) =>
+    ['KIBISIS', 'LUTE', 'BIATEC', 'WALLET CONNECT'].includes(wallet.metadata.name)
+  )
+
   return (
     <div className="wallet-list">
       <h3 className="text-lg font-medium">Connect Wallet</h3>
       <div className="wallet-options space-y-2">
-        {wallets.map((wallet) => (
+        {filteredWallets.map((wallet) => (
           <WalletOption key={wallet.id} wallet={wallet} />
         ))}
       </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Dropdown } from "@/components/ui/Dropdown"
 import { Dice6, Trophy } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion'
 import type { NFT, TokenHolderDisplay } from "@/types"
@@ -10,7 +10,7 @@ import { CopyableAddress } from "@/components/ui/copyable-address"
 import { useData } from '@/providers/data-provider'
 import { fetchVoiName } from '@/lib/utils'
 import { CONFIG } from "@/config"
-import { useWallet } from '@txnlab/use-wallet-react'
+import { Button } from "@/components/ui/button"
 
 interface Winner {
   holder: TokenHolderDisplay
@@ -23,24 +23,66 @@ interface Winner {
 }
 
 export function RollDice() {
-  const { holders, nfts, loading } = useData()
-  const { activeAccount } = useWallet() 
+  const { holders, nfts } = useData()
   const [winner, setWinner] = useState<Winner | null>(null)
+  const [randomMethod, setRandomMethod] = useState("Exclude Creator") // Default method
   const [isRolling, setIsRolling] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const selectWinner = async () => {
     if (!holders || holders.length === 0 || !nfts || nfts.length === 0) return
 
     setIsRolling(true)
+    setWinner(null) // Collapse the winner display while rolling
+    setIsDropdownOpen(false) // Close the dropdown when rolling starts
 
-    const totalTokens = holders.reduce((sum, holder) => sum + holder.balance, 0)
+    let filteredHolders = holders
 
+    // Apply the selected randomization method
+    switch (randomMethod) {
+      case 'Exclude Creator':
+        filteredHolders = holders.filter(
+          (holder) => holder.address !== CONFIG.WALLET_ADDRESS // Exclude creator
+        )
+        break
+      case 'Cap Weight':
+        filteredHolders = holders.map(holder => ({
+          ...holder,
+          balance: Math.min(holder.balance, 1000), // Cap at 1000
+        }))
+        break
+      case 'Logarithmic Scaling':
+        filteredHolders = holders.map(holder => ({
+          ...holder,
+          balance: Math.log10(holder.balance + 1), // Apply logarithmic scaling
+        }))
+        break
+      case 'Equal Weights':
+        filteredHolders = holders.map(holder => ({
+          ...holder,
+          balance: 1, // Equalize weights
+        }))
+        break
+    }
+
+    // If no holders remain after filtering
+    if (filteredHolders.length === 0) {
+      alert("No eligible holders available for selection.")
+      setIsRolling(false)
+      return
+    }
+
+    // Calculate the total token balance
+    const totalTokens = filteredHolders.reduce((sum, holder) => sum + holder.balance, 0)
+
+    // Generate a random point
     const randomPoint = Math.random() * totalTokens
 
     let accumulator = 0
-    let selectedHolder = holders[0]
+    let selectedHolder: TokenHolderDisplay | null = null
 
-    for (const holder of holders) {
+    // Find the selected holder
+    for (const holder of filteredHolders) {
       accumulator += holder.balance
       if (randomPoint <= accumulator) {
         selectedHolder = holder
@@ -48,33 +90,42 @@ export function RollDice() {
       }
     }
 
+    // Fallback in case no one is selected
+    if (!selectedHolder) {
+      selectedHolder = filteredHolders[Math.floor(Math.random() * filteredHolders.length)]
+    }
+
+    // Select a random NFT
     const randomNFT = nfts[Math.floor(Math.random() * nfts.length)]
     const metadata = JSON.parse(randomNFT.metadata)
 
+    // Fetch the voiName
     const voiName = await fetchVoiName(selectedHolder.address)
 
+    // Update the winner
     setTimeout(() => {
       setWinner({
-        holder: selectedHolder,
+        holder: selectedHolder!,
         nft: randomNFT,
         metadata: {
           name: metadata.name,
-          image: metadata.image
+          image: metadata.image,
         },
-        voiName 
+        voiName,
       })
       setIsRolling(false)
     }, 2000)
   }
 
-  const handleTransfer = () => {
-    if (winner) {
-      console.log(`Transferring NFT to ${winner.holder.address}`)
-    }
-  }
+  const handleTransfer = async () => {
+    if (!winner) return
 
-  if (!holders || holders.length === 0 || !nfts || nfts.length === 0) {
-    return null
+    try {
+      alert("Transfer functionality not yet implemented, but this would initiate a transfer!")
+    } catch (error) {
+      console.error("Error transferring NFT:", error)
+      alert("Transfer failed.")
+    }
   }
 
   return (
@@ -82,42 +133,42 @@ export function RollDice() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Dice6 className="h-5 w-5" />
-          Roll them Dice
+          Roll the Dice
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="text-muted-foreground">
-            Press the button below to show an example of randomly selecting a winner from the token holders.
-            The chance of winning is proportional to the amount of tokens they hold -
-            the more tokens they have, the better their chances!
-          </div>
-
+          {/* Dropdown and Roll Button */}
           <div className="flex justify-center">
-            <Button
-              size="lg"
-              onClick={selectWinner}
-              disabled={isRolling}
-              className="relative overflow-hidden"
-            >
-              {isRolling ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                >
+            <Dropdown
+              triggerText="Roll the Dice"
+              triggerIcon={
+                isRolling ? (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Dice6 className="h-5 w-5" />
+                  </motion.div>
+                ) : (
                   <Dice6 className="h-5 w-5" />
-                </motion.div>
-              ) : (
-                <>
-                  <Dice6 className="h-5 w-5 mr-2" />
-                  Roll the Dice
-                </>
-              )}
-            </Button>
+                )
+              }
+              subText={`Current approach: ${randomMethod}`}
+              items={[
+                { label: "Exclude Creator", onClick: () => setRandomMethod("Exclude Creator") },
+                { label: "Cap Weight", onClick: () => setRandomMethod("Cap Weight") },
+                { label: "Logarithmic Scaling", onClick: () => setRandomMethod("Logarithmic Scaling") },
+                { label: "Equal Weights", onClick: () => setRandomMethod("Equal Weights") },
+              ]}
+              onMainClick={selectWinner}
+              className={isRolling ? "opacity-50 cursor-not-allowed" : "w-full max-w-xs"} // Disabled styles during rolling
+            />
           </div>
 
+          {/* Winner Display */}
           <AnimatePresence mode="wait">
-            {winner && !isRolling && (
+            {!isRolling && winner && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -135,7 +186,7 @@ export function RollDice() {
 
                   <div className="space-y-4">
                     <div className="text-lg font-semibold">Winner Selected!</div>
-                    
+
                     <div>
                       <div className="text-sm text-muted-foreground mb-1">
                         Wallet Address:
@@ -144,10 +195,7 @@ export function RollDice() {
                         {winner.voiName ? (
                           <span className="font-medium">{winner.voiName}</span>
                         ) : (
-                          <CopyableAddress 
-                            address={winner.holder.address}
-                            variant="address"
-                          />
+                          <CopyableAddress address={winner.holder.address} variant="address" />
                         )}
                       </div>
                     </div>
@@ -156,9 +204,7 @@ export function RollDice() {
                       <div className="text-sm text-muted-foreground mb-1">
                         Prize NFT:
                       </div>
-                      <div className="font-medium">
-                        {winner.metadata.name}
-                      </div>
+                      <div className="font-medium">{winner.metadata.name}</div>
                       <div className="mt-4">
                         <img
                           src={winner.metadata.image}
