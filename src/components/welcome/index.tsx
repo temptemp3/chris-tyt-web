@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 export function Welcome() {
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden mt-[60px]">
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="bg-primary/10 p-8 flex items-center justify-center">
           <Image

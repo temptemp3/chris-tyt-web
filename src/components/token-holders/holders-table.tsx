@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { CopyableAddress } from '@/components/ui/copyable-address'
 import { formatAddress } from '@/lib/utils'
 import { fetchVoiName } from '@/lib/utils'
+import { CONFIG } from '@/config' // Import CONFIG for creator's wallet
 import type { TokenHolderDisplay } from '@/types'
 
 interface ExtendedHolder extends TokenHolderDisplay {
@@ -22,10 +23,12 @@ export function HoldersTable({ holders }: HoldersTableProps) {
   useEffect(() => {
     async function enrichHolders() {
       const results = await Promise.all(
-        holders.map(async (holder) => {
-          const voiName = await fetchVoiName(holder.address)
-          return { ...holder, voiName }
-        })
+        holders
+          .filter((holder) => holder.address !== CONFIG.WALLET_ADDRESS) // Exclude creator's wallet
+          .map(async (holder) => {
+            const voiName = await fetchVoiName(holder.address)
+            return { ...holder, voiName }
+          })
       )
       setExtendedHolders(results)
     }
@@ -53,10 +56,7 @@ export function HoldersTable({ holders }: HoldersTableProps) {
                 {holder.voiName ? (
                   <span className="font-medium">{holder.voiName}</span>
                 ) : (
-                  <CopyableAddress
-                    address={formatAddress(holder.address, 8)}
-                    variant="address"
-                  />
+                  <CopyableAddress address={formatAddress(holder.address, 8)} variant="address" />
                 )}
               </td>
               <td className="p-2 border-b text-right">

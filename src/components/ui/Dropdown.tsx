@@ -5,15 +5,14 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 interface DropdownProps {
-  triggerText: string // Main button text
-  triggerIcon?: React.ReactNode // Icon for the button
-  subText?: string // Small text under the button
-  items: { label: string; onClick: () => void }[] // Dropdown items
-  onMainClick: () => void // Function for main button click
+  triggerText: string 
+  triggerIcon?: React.ReactNode 
+  subText?: string 
+  items: { label: string; onClick: () => void }[] 
+  onMainClick: () => void 
   className?: string
 }
 
-// Main Dropdown Component
 export const Dropdown = ({ triggerText, triggerIcon, subText, items, onMainClick, className }: DropdownProps) => {
   const [isOpen, setIsOpen] = React.useState(false)
 
@@ -22,18 +21,17 @@ export const Dropdown = ({ triggerText, triggerIcon, subText, items, onMainClick
 
   return (
     <div className={cn("relative inline-flex flex-col items-center", className)}>
-      {/* Main Button */}
+ 
       <Button
-        onClick={onMainClick} // Handles the "Roll the Dice" functionality
+        onClick={onMainClick} 
         className="inline-flex items-center justify-between gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md"
       >
         {triggerIcon}
         <span>{triggerText}</span>
-        {/* Arrow as a separate clickable element */}
         <span
           className="ml-2 cursor-pointer"
           onClick={(e) => {
-            e.stopPropagation() // Prevent triggering the main button click
+            e.stopPropagation() 
             toggleDropdown()
           }}
         >

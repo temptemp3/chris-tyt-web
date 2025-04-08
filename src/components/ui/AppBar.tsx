@@ -55,52 +55,55 @@ export function AppBar() {
   }
 
   return (
-    <div className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
-      <div className="flex items-center gap-2 text-lg font-bold">
-        <img src="/images/chris-tyt.png" alt="Site Icon" className="h-[40px] w-[40px]" />
-        <span className="hidden sm:inline">Chris Thank You Tokens</span>
-        <span className="sm:hidden">CTYT</span>
-      </div>
-      {activeAccount ? (
-        <div className="flex items-center gap-4">
-          <div>
-            <span className="block text-sm font-medium">
-              {voiName || formatAddress(activeAccount.address, 8)}
-            </span>
-            <span className="block text-xs text-gray-300">
-              CTYT Balance: {ctytBalance !== null ? `${ctytBalance.toFixed(2)} CTYT` : 'Loading...'}
-            </span>
-          </div>
-          <Button onClick={handleDisconnect} className="bg-red-500 hover:bg-red-600">
-            Disconnect
-          </Button>
+    <>
+      {/* App Bar */}
+      <div className="bg-gray-100 text-gray-800 px-6 py-4 flex justify-between items-center fixed top-0 left-0 w-full z-50 shadow-md">
+        <div className="flex items-center gap-2 text-lg font-bold">
+          <img src="/images/chris-tyt.png" alt="Site Icon" className="h-[40px] w-[40px]" />
+          <span className="hidden sm:inline">Chris Thank You Tokens</span>
+          <span className="sm:hidden">CTYT</span>
         </div>
-      ) : (
-        <Button onClick={() => setIsModalOpen(true)} className="bg-blue-500 hover:bg-blue-600">
-          Connect Wallet
-        </Button>
-      )}
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <div className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Connect Wallet</h2>
-            <div className="space-y-4">
-              {wallets.map((wallet) => (
-                <Button
-                  key={wallet.id}
-                  onClick={() => handleConnect(wallet.id)}
-                  className="w-full bg-gray-700 hover:bg-gray-800"
-                >
-                  Connect {wallet.metadata.name}
-                </Button>
-              ))}
-              {wallets.length === 0 && (
-                <p className="text-gray-500">No supported wallets found. Please install a wallet.</p>
-              )}
+        {activeAccount ? (
+          <div className="flex items-center gap-4">
+            <div>
+              <span className="block text-sm font-medium">
+                {voiName || formatAddress(activeAccount.address, 8)}
+              </span>
+              <span className="block text-xs text-gray-600">
+                CTYT Balance: {ctytBalance !== null ? `${ctytBalance.toFixed(2)} CTYT` : 'Loading...'}
+              </span>
             </div>
+            <Button onClick={handleDisconnect} className="bg-red-500 hover:bg-red-600">
+              Disconnect
+            </Button>
           </div>
-        </Modal>
-      )}
-    </div>
+        ) : (
+          <Button onClick={() => setIsModalOpen(true)} className="bg-blue-500 hover:bg-blue-600">
+            Connect Wallet
+          </Button>
+        )}
+        {isModalOpen && (
+          <Modal onClose={() => setIsModalOpen(false)}>
+            <div className="p-6">
+              <h2 className="text-lg font-semibold mb-4">Connect Wallet</h2>
+              <div className="space-y-4">
+                {wallets.map((wallet) => (
+                  <Button
+                    key={wallet.id}
+                    onClick={() => handleConnect(wallet.id)}
+                    className="w-full bg-gray-700 hover:bg-gray-800"
+                  >
+                    Connect {wallet.metadata.name}
+                  </Button>
+                ))}
+                {wallets.length === 0 && (
+                  <p className="text-gray-500">No supported wallets found. Please install a wallet.</p>
+                )}
+              </div>
+            </div>
+          </Modal>
+        )}
+      </div>
+    </>
   )
 }

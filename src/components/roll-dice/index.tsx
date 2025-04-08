@@ -25,7 +25,7 @@ interface Winner {
 export function RollDice() {
   const { holders, nfts } = useData()
   const [winner, setWinner] = useState<Winner | null>(null)
-  const [randomMethod, setRandomMethod] = useState("Exclude Creator") // Default method
+  const [randomMethod, setRandomMethod] = useState("Exclude Creator")
   const [isRolling, setIsRolling] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -33,55 +33,50 @@ export function RollDice() {
     if (!holders || holders.length === 0 || !nfts || nfts.length === 0) return
 
     setIsRolling(true)
-    setWinner(null) // Collapse the winner display while rolling
-    setIsDropdownOpen(false) // Close the dropdown when rolling starts
+    setWinner(null) 
+    setIsDropdownOpen(false) 
 
     let filteredHolders = holders
 
-    // Apply the selected randomization method
     switch (randomMethod) {
       case 'Exclude Creator':
         filteredHolders = holders.filter(
-          (holder) => holder.address !== CONFIG.WALLET_ADDRESS // Exclude creator
+          (holder) => holder.address !== CONFIG.WALLET_ADDRESS 
         )
         break
       case 'Cap Weight':
         filteredHolders = holders.map(holder => ({
           ...holder,
-          balance: Math.min(holder.balance, 1000), // Cap at 1000
+          balance: Math.min(holder.balance, 1000), 
         }))
         break
       case 'Logarithmic Scaling':
         filteredHolders = holders.map(holder => ({
           ...holder,
-          balance: Math.log10(holder.balance + 1), // Apply logarithmic scaling
+          balance: Math.log10(holder.balance + 1), 
         }))
         break
       case 'Equal Weights':
         filteredHolders = holders.map(holder => ({
           ...holder,
-          balance: 1, // Equalize weights
+          balance: 1, 
         }))
         break
     }
 
-    // If no holders remain after filtering
     if (filteredHolders.length === 0) {
       alert("No eligible holders available for selection.")
       setIsRolling(false)
       return
     }
 
-    // Calculate the total token balance
     const totalTokens = filteredHolders.reduce((sum, holder) => sum + holder.balance, 0)
 
-    // Generate a random point
     const randomPoint = Math.random() * totalTokens
 
     let accumulator = 0
     let selectedHolder: TokenHolderDisplay | null = null
 
-    // Find the selected holder
     for (const holder of filteredHolders) {
       accumulator += holder.balance
       if (randomPoint <= accumulator) {
@@ -90,19 +85,15 @@ export function RollDice() {
       }
     }
 
-    // Fallback in case no one is selected
     if (!selectedHolder) {
       selectedHolder = filteredHolders[Math.floor(Math.random() * filteredHolders.length)]
     }
 
-    // Select a random NFT
     const randomNFT = nfts[Math.floor(Math.random() * nfts.length)]
     const metadata = JSON.parse(randomNFT.metadata)
 
-    // Fetch the voiName
     const voiName = await fetchVoiName(selectedHolder.address)
 
-    // Update the winner
     setTimeout(() => {
       setWinner({
         holder: selectedHolder!,
@@ -117,15 +108,8 @@ export function RollDice() {
     }, 2000)
   }
 
-  const handleTransfer = async () => {
-    if (!winner) return
-
-    try {
-      alert("Transfer functionality not yet implemented, but this would initiate a transfer!")
-    } catch (error) {
-      console.error("Error transferring NFT:", error)
-      alert("Transfer failed.")
-    }
+  const handleTransfer = () => {
+    alert("Up to Shelly :)")
   }
 
   return (

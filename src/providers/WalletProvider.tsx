@@ -8,38 +8,38 @@ const manager = new WalletManager({
       id: WalletId.KIBISIS,
       metadata: {
         name: 'KIBISIS',
-        icon: '../images/kibisis.png', // Update with the correct icon path
+        icon: '../../public/images/chris-tyt.png',
       },
     },
     {
       id: WalletId.LUTE,
       options: {
-        siteName: 'Your Site Name', // Required for LUTE
+        siteName: 'Your Site Name', 
       },
       metadata: {
         name: 'LUTE',
-        icon: '../images/lute.png', // Update with the correct icon path
+        icon: '../../public/images/chris-tyt.png',
       },
     },
     {
       id: WalletId.BIATEC,
       options: {
-        projectId: 'your-biatec-project-id', // Replace with a valid project ID for BIATEC
+        projectId: 'your-biatec-project-id', 
       },
       metadata: {
         name: 'BIATEC',
-        icon: '../images/biatec.png', // Update with the correct icon path
+        icon: '../../public/images/chris-tyt.png',
       },
     },
     {
       id: WalletId.WALLETCONNECT,
       options: {
-        projectId: 'your-walletconnect-project-id', // Replace with your WalletConnect project ID
+        projectId: 'your-walletconnect-project-id', 
         metadata: {
           name: 'WALLET CONNECT',
           description: 'Connect with any WalletConnect-compatible wallet',
-          url: 'https://yourwebsite.com', // Update with your site URL
-          icons: ['../images/walletconnect.png'], // Update with the correct icon path
+          url: 'https://yourwebsite.com', 
+          icons: ['../../public/images/chris-tyt.png'], 
         },
       },
     },
@@ -47,9 +47,9 @@ const manager = new WalletManager({
   networks: {
     [NetworkId.MAINNET]: {
       algod: {
-        baseServer: 'https://mainnet-api.voi.nodely.dev', // Voi mainnet
-        port: '', // Adapt as needed
-        token: '', // Adapt as needed
+        baseServer: 'https://mainnet-api.voi.nodely.dev', 
+        port: '', 
+        token: '', 
       },
     },
     [NetworkId.TESTNET]: {
@@ -60,7 +60,7 @@ const manager = new WalletManager({
       },
     },
   },
-  defaultNetwork: NetworkId.MAINNET, // Defaults to Voi mainnet
+  defaultNetwork: NetworkId.MAINNET,
 })
 
 export function WalletProviderWrapper({ children }: { children: React.ReactNode }) {
